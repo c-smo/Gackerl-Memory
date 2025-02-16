@@ -1,0 +1,570 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Memory</title>
+        <style>:root {
+    font-family: monospace;
+    -moz-user-select: none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    -khtml-user-select: none;
+}
+
+body {
+    background: #2c3e50;
+    width: 100vw;
+    height: 100vh;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+.container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.default {
+    display: flex;
+    flex-flow: column;
+    position: relative;
+    width: 90vw;
+    height: fit-content;
+    background: #34495e;
+    align-items: center;
+    border-radius: 20px;
+    transition-duration: 500ms;
+}
+
+.settings {
+    gap: 10px;
+    position: absolute;
+    width: fit-content;
+    padding: 30px;
+}
+
+.game {
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: fit-content;
+    transition-duration: 500ms;
+}
+
+.over {
+    width:fit-content;
+    padding: 30px;
+}
+
+.winner {
+    font-size: 60px;
+    margin-bottom: 30px;
+    color: gold;
+}
+
+.current-team-color{
+    width: 3pc;
+    height: auto;
+    border-radius: 10px;
+    color: transparent;
+    transition-duration: 500ms;
+}
+
+.score{
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    text-align: center;
+    justify-items: center;
+    width: fit-content;
+    color: white;
+    font-weight: bold;
+    font-size: 20px;
+    padding: 10px;
+    margin-bottom: 30px;
+    transition-duration: 500ms;
+}
+
+.team-display{
+    color: rgba(255,255,255,0.1);
+    transition-duration: 500ms;
+}
+
+.grid {
+    display: grid;
+
+    grid-template-rows: repeat(var(--global-rows), 1fr);
+    grid-template-columns: repeat((--global-cols), 1fr);
+    width: 100%;
+    height: 100%;
+
+    justify-items: center;
+    align-items: center;
+    row-gap: 40px;
+    column-gap: 30px;
+    padding: 30px;
+}
+
+.grid-cell {
+    z-index: 0;
+    width: 125px;
+    height: 125px;
+    display: flex;
+    text-align: center;
+    justify-content: center;
+    align-items: center;
+    transition-duration: 500ms;
+}
+
+.grid-pos {
+    z-index: 1;
+    position: absolute;
+    font-size: 40px;
+    font-weight: bolder;
+    color: white;
+    text-shadow: 5px;
+    display: flex;
+    transition-duration: 250ms;
+}
+
+img {
+    border-style: solid;
+    border-width: 3px;
+    border-color: white;
+    border-radius: 10px;
+    width: 100%;
+    height: 100%;
+    transition-duration: 500ms;
+}
+
+.team-select {
+    margin-bottom: 30px;
+    display: flex;
+    justify-content: center;
+    grid-template-columns: repeat(2, 1fr);
+}
+
+button {
+    background-color: #2ecc71;
+    color: #27ae60;
+    height: 45px;
+    width: fit-content;
+    border: none;
+    border-radius: 10px;
+    font-family: monospace;
+    font-size: 20px;
+    font-weight: bold;
+    margin-top: 60px;
+    margin-bottom: 30px;
+    cursor: pointer;
+    padding: 10px;
+    transition-duration: 500ms;
+}
+
+button:hover {
+    color: white;
+    scale: 1.1;
+}
+
+input[type='text'] {
+    height: 30px;
+    border: none;
+    padding: 0;
+    margin: 0;
+    font-size: large;
+    font-weight: bold;
+    text-align: center;
+    width: 150px;
+    margin-right: 15px;
+    border-radius: 10px;
+    transition-duration: 500ms;
+}
+
+input[type='text']:hover {
+    scale: 1.05;
+}
+
+input[type='color'] {
+    height: 30px;
+    width: 30px;
+    background: none;
+    border: none;
+    padding: 0;
+    margin: 0;
+    border-radius: 10px;
+    transition-duration: 500ms;
+}
+
+input[type='color']:hover {
+    scale: 1.1;
+}
+
+input[type='color']::-webkit-color-swatch-wrapper {
+    padding: 0;
+}
+
+input[type='color']::-webkit-color-swatch {
+    border: none;
+}
+
+.pulse {
+    animation: pulse 2s infinite;
+}
+
+.match {
+    animation: pulse 500ms 1;
+}
+
+.cards-select {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    text-align: center;
+    justify-items: center;
+    color: white;
+    font-weight: bold;
+    font-size: 15px;
+    column-gap: 20px;
+    transition-duration: 500ms;
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(0.9);
+  }
+  100% {
+    transform: scale(1);
+  }
+}</style>
+    </head>
+    <body>
+        <div class="default settings" id="settings">
+            <div class="team-select">
+                <input type="text" id="selected-name-a" value="Team A" />
+                <input type="color" id="color-a" value="#3498db" />
+            </div>
+            <div class="team-select">
+                <input type="text" id="selected-name-b" value="Team B" />
+                <input type="color" id="color-b" value="#e74c3c" />
+            </div>
+            <div class="cards-select">
+                <label>Form
+                    <input type="checkbox" id="select-shape" checked>
+                </label>
+                <label>Farbe
+                    <input type="checkbox" id="select-color" checked>
+                </label>
+            </div>
+            <button id="start">start</button>
+        </div>
+
+        <div class="game" id="game">
+            <div class="default score">
+                <div class="team-display" id="team-a"></div>
+                <div class="current-team-color" id="current-team-color">#</div>
+                <div class="team-display" id="team-b"></div>
+            </div>
+            <div class="default grid" id="grid"></div>
+        </div>
+
+        <div class="default game over" id="game-over">
+            <div class="winner pulse" id="winner">Gleichstand!</div>
+            <div class="score">
+                <div id="final-a">Team A: 0</div>
+                <div>-</div>
+                <div id="final-b">Team B: 0</div>
+            </div>
+            <button id="restart">restart</button>
+        </div>
+
+        <script>const get = (id) => document.getElementById(id);
+
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+</script>
+        <script>//settings
+const show_label = true;
+
+//game state
+const state = {
+    current_team: 'a',
+    score_a: 0,
+    score_b: 0,
+    name_a: 'Team A',
+    name_b: 'Team B',
+    color_a: '#3498db',
+    color_b: '#e74c3c',
+    selected: [],
+    matched: [],
+    can_flip: true,
+    num_cards: 0,
+    rows: 4,
+    cols: 8
+};
+
+const init_state = () => {
+    state.name_a = get('selected-name-a').value;
+    state.name_b = get('selected-name-b').value;
+    state.color_a = get('color-a').value;
+    state.color_b = get('color-b').value;
+    state.score_a = 0;
+    state.score_b = 0;
+    state.selected = [];
+    state.matched = [];
+    state.can_flip = true;
+};
+</script>
+        <script>const fill_grid = () => {
+    const all_cells = [];
+    get('grid').innerHTML = '';
+
+    const fn = (num_cards, dir) => {
+        for (let i = 1; i <= num_cards; i++) {
+            all_cells.push(create_card(i, dir, 'a'));
+            all_cells.push(create_card(i, dir, 'b'));
+        }
+        state.num_cards += num_cards;
+    };
+
+    if (get('select-shape').checked) {
+        fn(7, 'form');
+    }
+
+    if (get('select-color').checked) {
+        fn(9, 'farbe');
+    }
+
+    set_rows_cols();
+
+    let i = 0;
+    while (all_cells.length) {
+        const r = Math.floor(Math.random() * all_cells.length);
+        const cell = all_cells.splice(r, 1)[0];
+
+        cell.appendChild(get_label(i));
+        get('grid').appendChild(cell);
+        i++;
+    }
+};
+
+const create_card = (index, path, side) => {
+    const cell = document.createElement('div');
+    cell.classList.add('grid-cell');
+
+    cell.appendChild(get_img(index, path, side));
+
+    cell.addEventListener('click', () => handle_click(cell));
+    cell.setAttribute('id', `${index}`);
+    cell.setAttribute('dir', `${path}`);
+
+    return cell;
+};
+
+const get_img = (index, path, side) => {
+    const back = document.createElement('img');
+    back.setAttribute('src', './img/back.png');
+    back.setAttribute('id', `${path}/${index}${side}`);
+    return back;
+};
+
+const get_label = (index) => {
+    if (show_label === false) return document.createElement('div');
+    const pos = {
+        x: index % state.cols,
+        y: Math.floor(index / state.cols)
+    };
+
+    const label = document.createElement('div');
+    label.classList.add('grid-pos');
+    label.innerHTML = `${String.fromCharCode(65 + pos.y)}${(index % state.cols) + 1}`;
+    return label;
+};
+
+const set_rows_cols = () => {
+    if (state.num_cards === 7) {
+        state.cols = 4;
+    } else if (state.num_cards === 9) {
+        state.cols = 5;
+    }
+
+    get('grid').style.gridTemplateRows = `repeat(4, 1fr)`;
+    get('grid').style.gridTemplateColumns = `repeat(${state.cols}, 1fr)`;
+};
+</script>
+        <script>const handle_click = async (self) => {
+    if (
+        state.can_flip === false ||
+        state.selected.includes(self) ||
+        state.matched.includes(self)
+    ) {
+        console.log('nope');
+        return;
+    }
+
+    if (state.selected.length < 2) {
+        state.selected.push(self);
+        flip(self, true);
+    }
+
+    if (state.selected.length === 2) {
+        state.can_flip = false;
+
+        is_match() ? found_pair() : no_pair();
+    }
+};
+
+const is_match = () =>
+    state.selected[0].id === state.selected[1].id &&
+    state.selected[0].dir === state.selected[1].dir;
+
+const found_pair = async () => {
+    await sleep(750);
+    const fn = (x) => {
+        state['score_' + x] += 1;
+        get('team-' + x).innerHTML =
+            `${state['name_' + x]}: ${state['score_' + x]}`;
+    };
+
+    state.current_team === 'a' ? fn('a') : fn('b');
+
+    while (state.selected.length) {
+        const card = state.selected.shift();
+        card.style.zIndex = 10;
+        card.classList.add('match');
+        state.matched.push(card);
+    }
+
+    state.can_flip = true;
+    if (state.matched.length === state.num_pairs * 2) {
+        game_over();
+    }
+};
+
+const no_pair = async () => {
+    await sleep(2000);
+
+    while (state.selected.length) {
+        const card = state.selected.shift();
+        flip(card, false);
+    }
+
+    const fn = (x, y) => {
+        state.current_team = x;
+        get('team-' + x).style.color = 'rgba(255,255,255,1)';
+        get('team-' + y).style.color = 'rgba(255,255,255,0.1)';
+        get('current-team-color').style.backgroundColor = state['color_' + x];
+    };
+
+    state.current_team === 'a' ? fn('b', 'a') : fn('a', 'b');
+};
+
+const flip = async (card, bFace) => {
+    const img = card.getElementsByTagName('img')[0];
+    const label = card.querySelector('div');
+    img.style.width = '0%';
+    if (bFace) {
+        card.style.scale = '1.2';
+        label.style.color = 'transparent';
+        label.style.scale = '0';
+        img.style.borderColor = state['color_' + state.current_team];
+        await sleep(250);
+        img.setAttribute('src', `./img/${img.id}.png`);
+    } else {
+        card.style.scale = '1.0';
+        img.style.borderColor = 'white';
+        await sleep(250);
+        img.setAttribute('src', `./img/back.png`);
+    }
+    img.style.width = '100%';
+    await sleep(250);
+    if (!bFace) {
+        state.can_flip = true;
+        label.style.color = 'white';
+        label.style.scale = '1';
+    }
+};
+</script>
+        <script>document.addEventListener('DOMContentLoaded', async (e) => {
+    await init();
+});
+
+document.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+        game_over();
+    }
+});
+
+const init = async () => {
+    const fn = async (div_id) => {
+        get(div_id).style.transform = 'translateY(-100vh)';
+        await sleep(500);
+        start_game();
+    };
+
+    get('start').addEventListener('click', () => {
+        fn('settings');
+    });
+
+    get('restart').addEventListener('click', async () => {
+        fn('game-over');
+    });
+
+    get('game').style.transform = 'translateY(-100vh)';
+    get('game-over').style.transform = 'translateY(-100vh)';
+};
+
+const start_game = async () => {
+    init_state();
+
+    get('team-a').innerHTML = `${state.name_a}: 0`;
+    get('team-b').innerHTML = `${state.name_b}: 0`;
+
+    Math.random() < 0.5
+        ? (state.current_team = 'a')
+        : (state.current_team = 'b');
+
+    get('current-team-color').setAttribute(
+        'style',
+        `background-color: ${state['color_' + state.current_team]};`
+    );
+
+    const fn = (x, y) => {
+        get('team-' + x).setAttribute('style', `color: white;`);
+        get('team-' + y).setAttribute('style', `color: rgba(255,255,255,0.1);`);
+    };
+
+    state.current_team === 'a' ? fn('a', 'b') : fn('b', 'a');
+
+    fill_grid();
+    get('game').style.transform = 'translateY(0)';
+};
+
+const game_over = async () => {
+    await sleep(1000);
+    get('game').style.transform = 'translateY(-100vh)';
+    get('final-a').innerHTML = `${state.name_a}: ${state.score_a}`;
+    get('final-b').innerHTML = `${state.name_b}: ${state.score_b}`;
+
+    if (state.score_a > state.score_b) {
+        get('winner').innerHTML = state.name_a;
+    } else if (state.score_a < state.score_b) {
+        get('winner').innerHTML = state.name_b;
+    } else {
+        get('winner').innerHTML = 'Gleichstand!';
+    }
+
+    await sleep(500);
+    get('game-over').style.transform = 'translateY(0%)';
+};
+</script>
+    </body>
+</html>
