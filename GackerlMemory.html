@@ -407,7 +407,6 @@ const set_rows_cols = () => {
         state.selected.includes(self) ||
         state.matched.includes(self)
     ) {
-        console.log('nope');
         return;
     }
 
@@ -415,8 +414,6 @@ const set_rows_cols = () => {
         state.selected.push(self);
         flip(self, true);
     }
-
-    console.log(state.selected[0].dataset.path)
 
     if (state.selected.length === 2) {
         state.can_flip = false;
