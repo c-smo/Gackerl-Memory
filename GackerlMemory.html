@@ -365,7 +365,7 @@ const create_card = (index, path, side) => {
 
     cell.addEventListener('click', () => handle_click(cell));
     cell.setAttribute('id', `${index}`);
-    cell.setAttribute('dir', `${path}`);
+    cell.setAttribute('data-path', `${path}`);
 
     return cell;
 };
@@ -416,6 +416,8 @@ const set_rows_cols = () => {
         flip(self, true);
     }
 
+    console.log(state.selected[0].dataset.path)
+
     if (state.selected.length === 2) {
         state.can_flip = false;
 
@@ -425,7 +427,7 @@ const set_rows_cols = () => {
 
 const is_match = () =>
     state.selected[0].id === state.selected[1].id &&
-    state.selected[0].dir === state.selected[1].dir;
+    state.selected[0].dataset.path === state.selected[1].dataset.path;
 
 const found_pair = async () => {
     await sleep(750);
